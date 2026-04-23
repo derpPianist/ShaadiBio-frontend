@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box, Typography, Button, TextField, Checkbox, FormControlLabel, Link as MuiLink, IconButton, InputAdornment, Divider } from '@mui/material';
 import Image from 'next/image';
 import PersonIcon from '@mui/icons-material/Person';
@@ -13,11 +13,60 @@ import { useTheme } from '@mui/material/styles';
 import { ColorModeContext } from '../theme/ThemeRegistry';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import { useAuth } from '../context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
   const isDark = theme.palette.mode === 'dark';
+
+  const {setAccessToken} = useAuth()
+
+  const router = useRouter()
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
+
+  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | {value: unknown}>) => {
+    setFormData((prev) => ({...prev, [field]: e.target.value}))
+  }
+
+  const handleLogin = async () => {
+
+    try {
+
+      const res = await fetch("http://localhost:5000/api/v1/auth/login", {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json()
+
+      if(!res.ok){
+        console.log("Login Error data: ", data);
+        return;
+      }
+
+      console.log("login data: ", data);
+
+      setAccessToken(data.accessToken)
+
+      router.push(`/dashboard?id=${encodeURIComponent(data.account.userId)}`)
+      
+    } catch (error) {
+
+      console.error("Error while logging in: ", error)
+      
+    }
+
+  }
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: isDark ? '#121212' : '#f5f5f7', pt: 10 }}>
@@ -100,10 +149,11 @@ export default function LoginPage() {
               
               <Box>
                 <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: isDark ? '#ccc' : '#333' }}>
-                  Email or Phone Number
+                  Email
                 </Typography>
                 <TextField
                   fullWidth
+                  onChange={handleChange("email")}
                   placeholder="Enter your email or phone"
                   variant="outlined"
                   InputProps={{
@@ -128,6 +178,7 @@ export default function LoginPage() {
                 </Box>
                 <TextField
                   fullWidth
+                  onChange={handleChange("password")}
                   type="password"
                   placeholder="Enter your password"
                   variant="outlined"
@@ -168,6 +219,7 @@ export default function LoginPage() {
                   fontSize: '1rem',
                   '&:hover': { bgcolor: '#52141f' }
                 }}
+                onClick={handleLogin}
               >
                 Login to Account
               </Button>

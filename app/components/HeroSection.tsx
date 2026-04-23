@@ -70,7 +70,7 @@ export default function HeroSection() {
             fontSize: { xs: '3rem', md: '5rem' }
           }}
         >
-          Find Your <span style={{ color: theme.palette.primary.main }}>Perfect</span> {isDark ? 'Match' : 'Life Partner'}
+          Find Your <span style={{ color: theme.palette.primary.main }}>Perfect</span> {isDark ? 'Match' : 'Match'}
         </Typography>
 
         <Typography 
@@ -84,8 +84,8 @@ export default function HeroSection() {
           }}
         >
           {isDark 
-            ? 'Experience the future of matrimony with our AI-powered matchmaking designed to find your soulmate faster and more securely. Join millions of happy couples.'
-            : 'Connecting Hearts, Creating Forever'}
+            ? 'Experience the future of matrimony with our AI-powered matchmaking designed to find your soulmate faster and more securely. Join millions of happy couples'
+            : 'Experience the future of matrimony with our AI-powered matchmaking designed to find your soulmate faster and more securely. Join millions of happy couples'}
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3 }}>

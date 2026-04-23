@@ -3,6 +3,7 @@ import "./globals.css";
 import ThemeRegistry from "./theme/ThemeRegistry";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import Header from "./components/Header";
+import { AuthProvider } from "./context/AuthContext";
 
 export const metadata: Metadata = {
   title: "ShaadiBio",
@@ -17,13 +18,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppRouterCacheProvider>
-          <ThemeRegistry>
-            <Header />
-            {children}
-          </ThemeRegistry>
-        </AppRouterCacheProvider>
+        <AuthProvider>
+          <AppRouterCacheProvider>
+            <ThemeRegistry>
+              <Header />
+              {children}
+            </ThemeRegistry>
+          </AppRouterCacheProvider>
+        </AuthProvider>
       </body>
     </html>
   );
 }
+
+/**
+ * @Provider: It is a React component that wraps our app which allows components to share global data avoiding prop drilling
+ */

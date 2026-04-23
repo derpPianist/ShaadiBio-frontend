@@ -25,12 +25,15 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
+
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     full_name: "",
@@ -53,7 +56,7 @@ export default function SignupPage() {
       setFormData((prev) => ({ ...prev, [field]: e.target.value }));
     };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirm_password) {
       setErrorText("Passwords do not match");
@@ -73,7 +76,32 @@ export default function SignupPage() {
     };
 
     console.log("Submit Payload:", JSON.stringify(payload, null, 2));
-    alert("Check console for JSON payload!");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/auth/register", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload, null, 2),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorText(data.message || "Something went wrong");
+        console.log("Verify-otp data: ", data);
+        return;
+      }
+
+      console.log("Verify-otp data: ", data);
+
+      router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
+      
+    } catch (err) {
+      setErrorText("Server not reachable at the moment");
+    }
   };
 
   return (
@@ -425,6 +453,11 @@ export default function SignupPage() {
                             "& .MuiOutlinedInput-root": {
                               borderRadius: 2,
                               bgcolor: isDark ? "#2e2e2e" : "#ffffff",
+                              "& .MuiInputBase-input": {
+                                backgroundColor: isDark ? "#2e2e2e" : "#fff",
+                              },
+                              backgroundColor: `${isDark ? "#2e2e2e" : "#fff"} !important`,
+                              paddingLeft: "12px",
                               "& fieldset": {
                                 borderColor: isDark ? "#444" : "#dcdcdc",
                               },

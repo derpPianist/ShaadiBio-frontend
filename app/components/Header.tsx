@@ -13,6 +13,7 @@ import { useTheme } from '@mui/material/styles';
 import { ColorModeContext } from '../theme/ThemeRegistry';
 import Image from 'next/image';
 import NextLink from 'next/link';
+import Link from 'next/link'
 import { usePathname } from 'next/navigation';
 
 const navItems = ['Home', 'About Us', 'Membership', 'Contact'];
@@ -26,17 +27,20 @@ export default function Header() {
   return (
     <AppBar position="absolute" color="transparent" elevation={0} sx={{ zIndex: 10, px: { xs: 2, md: 6 }, py: 2 }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Image src="/images/logo.png" alt="Shadi Ki Baat" width={32} height={32} />
-          <Typography variant="h6" component="div" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, color: theme.palette.text.primary }}>
-            Shadi Ki Baat
-          </Typography>
-        </Box>
+        <Link href='/'>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          
+            <Image src="/images/logo.png" alt="Shaadi Bio" width={32} height={32} />
+            <Typography variant="h6" component="div" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, color: theme.palette.text.primary }}>
+            ShaadiBio
+            </Typography>
+          </Box>
+        </Link>
 
         {!isVerifyOtp && (
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
             {navItems.map((item) => (
-              <Button key={item} sx={{ color: theme.palette.text.primary, fontWeight: 600, textTransform: 'none' }}>
+              <Button key={item} sx={{ color: theme.palette.text.primary, fontWeight: 600, textTransform: 'none' }} component={NextLink} href='/'>
                 {item}
               </Button>
             ))}
