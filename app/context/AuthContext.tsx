@@ -14,7 +14,7 @@ type AuthContextType = {
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
   refreshAccessToken: () => Promise<string | null>;
-  logout: () => Promise<void>
+  logout: () => Promise<any>
 };
 
 // `null` in the create context argument is the default state to be used if no provider is found
@@ -62,14 +62,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const res = await fetch("http://localhost:5000/api/v1/auth/logout", {
         method: "POST",
-        credentials: "include"
+        credentials: "include",
+        headers : {
+          "Authorization" : `Bearer ${accessToken}`
+        }, 
       })
 
       const data = await res.json()
 
       const message = data.message
 
+      console.log("Data in authContext logout: ", message)
+
       setAccessToken(null)
+
+      return data
+
     } catch (error) {
       
       console.error("Error while logout (frontend): ", error)
