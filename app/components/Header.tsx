@@ -48,49 +48,6 @@ export default function Header() {
     }
   };
 
-  // return (
-  //   <AppBar position="absolute" color="transparent" elevation={0} sx={{ zIndex: 10, px: { xs: 2, md: 6 }, py: 2 }}>
-  //     <Toolbar sx={{ justifyContent: 'space-between' }}>
-  //       <Link href='/'>
-  //         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-
-  //           <Image src="/images/logo.png" alt="Shaadi Bio" width={32} height={32} />
-  //           <Typography variant="h6" component="div" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, color: theme.palette.text.primary }}>
-  //           ShaadiBio
-  //           </Typography>
-  //         </Box>
-  //       </Link>
-
-  //       {!isVerifyOtp && (
-  //         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
-  //           {navItems.map((item) => (
-  //             <Button key={item} sx={{ color: theme.palette.text.primary, fontWeight: 600, textTransform: 'none' }} component={NextLink} href='/'>
-  //               {item}
-  //             </Button>
-  //           ))}
-  //         </Box>
-  //       )}
-
-  //       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-  //         <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
-  //           {theme.palette.mode === 'dark' ? <LightModeIcon sx={{ color: theme.palette.text.primary }} /> : <DarkModeIcon sx={{ color: theme.palette.text.primary }} />}
-  //         </IconButton>
-
-  //         {!isVerifyOtp && (
-  //           <>
-  //             <Button component={NextLink} href="/login" sx={{ color: theme.palette.text.primary, fontWeight: 600 }}>
-  //               Log In
-  //             </Button>
-  //             <Button component={NextLink} href="/signup" variant="contained" color="primary">
-  //               Sign Up
-  //             </Button>
-  //           </>
-  //         )}
-  //       </Box>
-  //     </Toolbar>
-  //   </AppBar>
-  // );
-
   return accessToken ? (
     <AppBar
       position="absolute"

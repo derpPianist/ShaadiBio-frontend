@@ -68,6 +68,12 @@ export default function LoginPage() {
 
   }
 
+  const handleGoogleLogin = () => {
+
+      window.location.href = "http://localhost:5000/api/v1/auth/login/federated/google"
+
+  }
+
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: isDark ? '#121212' : '#f5f5f7', pt: 10 }}>
       {/* Main Content Area */}
@@ -239,6 +245,7 @@ export default function LoginPage() {
                 variant="outlined"
                 fullWidth
                 startIcon={<GoogleIcon sx={{ color: '#DB4437' }} />}
+                onClick={handleGoogleLogin}
                 sx={{
                   color: isDark ? '#ddd' : '#333',
                   borderColor: isDark ? '#444' : '#e0e0e0',
