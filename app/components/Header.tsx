@@ -27,6 +27,7 @@ export default function Header() {
   const colorMode = useContext(ColorModeContext);
   const pathname = usePathname();
   const isVerifyOtp = pathname === "/verify-otp";
+  
 
   const { accessToken, logout } = useAuth();
 
@@ -149,7 +150,7 @@ export default function Header() {
           </Box>
         </Link>
 
-        {!isVerifyOtp && (
+        {!(isVerifyOtp) && (
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: 4 }}>
             {navItems.map((item) => (
               <Button
@@ -181,7 +182,7 @@ export default function Header() {
             )}
           </IconButton>
 
-          {!isVerifyOtp && (
+          {!(isVerifyOtp) && (
             <>
               <Button
                 component={NextLink}
