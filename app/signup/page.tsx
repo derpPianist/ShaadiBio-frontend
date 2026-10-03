@@ -98,7 +98,6 @@ export default function SignupPage() {
       console.log("Verify-otp data: ", data);
 
       router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
-      
     } catch (err) {
       setErrorText("Server not reachable at the moment");
     }

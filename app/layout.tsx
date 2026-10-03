@@ -4,6 +4,7 @@ import ThemeRegistry from "./theme/ThemeRegistry";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import Header from "./components/Header";
 import { AuthProvider } from "./context/AuthContext";
+import 'react-image-crop/dist/ReactCrop.css'
 
 export const metadata: Metadata = {
   title: "ShaadiBio",

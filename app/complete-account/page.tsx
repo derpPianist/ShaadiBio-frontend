@@ -200,8 +200,8 @@ const CompleteAccount = () => {
         if(response.ok){
           console.log("Successful Response!")
           setAccessToken(data.accessToken)
-          setSnackbar({ open: true, message: data.message, severity: 'success' });
           router.push(`/dashboard?id=${encodeURIComponent(data.account.userId)}`)
+          setSnackbar({ open: true, message: data.message, severity: 'success' });
         }else{
           console.log("Else block hit in response!")
           setSnackbar({

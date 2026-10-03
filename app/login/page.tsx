@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Box, Typography, Button, TextField, Checkbox, FormControlLabel, Link as MuiLink, IconButton, InputAdornment, Divider } from '@mui/material';
 import Image from 'next/image';
 import PersonIcon from '@mui/icons-material/Person';
@@ -21,7 +21,7 @@ export default function LoginPage() {
   const colorMode = useContext(ColorModeContext);
   const isDark = theme.palette.mode === 'dark';
 
-  const {setAccessToken} = useAuth()
+  const {setAccessToken, accessToken} = useAuth()
 
   const router = useRouter()
 
@@ -58,6 +58,8 @@ export default function LoginPage() {
 
       setAccessToken(data.accessToken)
 
+      console.log("Called setAccessToken")
+
       router.push(`/dashboard?id=${encodeURIComponent(data.account.userId)}`)
       
     } catch (error) {
@@ -73,6 +75,10 @@ export default function LoginPage() {
       window.location.href = "http://localhost:5000/api/v1/auth/login/federated/google"
 
   }
+
+  useEffect(() => {
+  console.log("Access token changed:", accessToken);
+}, [accessToken]);
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: isDark ? '#121212' : '#f5f5f7', pt: 10 }}>

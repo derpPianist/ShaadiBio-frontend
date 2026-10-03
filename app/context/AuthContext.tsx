@@ -10,8 +10,12 @@ import { createContext, useEffect, useState, useContext } from "react";
  * logout function -> void return
  */
 
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
 type AuthContextType = {
   accessToken: string | null;
+  authenticated: Boolean;
+  loading: Boolean;
   setAccessToken: (token: string | null) => void;
   refreshAccessToken: () => Promise<string | null>;
   logout: () => Promise<any>
@@ -29,8 +33,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // State to check if the credentials are available. It pauses rendering until credentials are loaded
   const [loading, setLoading] = useState<Boolean>(true);
 
+  // State to confirm authentication status (to be used for dynamically rendering pages)
+  const [authenticated, setAuthenticated] = useState<Boolean>(false);
+
   // refresh access token triggered when a page refresh happens
   const refreshAccessToken = async () => {
+
     try {
       const res = await fetch("http://localhost:5000/api/v1/auth/refreshToken", {
         method: "POST",
@@ -39,18 +47,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (!res.ok) {
         setAccessToken(null)
+        setAuthenticated(false)
         return null
       }
 
       const data = await res.json();
 
       setAccessToken(data.accessToken);
+      setAuthenticated(true)
 
       return data.accessToken;
 
     } catch (err) {
       console.error("Error in refreshToken context: ", err);
       setAccessToken(null);
+      setAuthenticated(false)
       return null
     } finally {
       setLoading(false);
@@ -59,6 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // logout to clear access token when user wants to logout. Cookie removal is handled from backend
   const logout = async () => {
+    setLoading(true)
     try {
       const res = await fetch("http://localhost:5000/api/v1/auth/logout", {
         method: "POST",
@@ -82,18 +94,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       console.error("Error while logout (frontend): ", error)
       setAccessToken(null)
+    }finally{
+      setLoading(false)
+      setAuthenticated(false)
     }
+  }
+
+  const checkTokenAndFetch = async(url: string, method: HttpMethod = 'GET', body?: unknown) => {
+
   }
 
   // Triggers the request for a new access token on page refresh
   useEffect(()=>{
+    console.log("Calling refreshAccessToken");
     refreshAccessToken()
   }, [])
 
   //Creating the provider which creates the context for our auth
   //Page will not render until the credentials are loaded
   return(
-    <AuthContext.Provider value={{accessToken, setAccessToken, refreshAccessToken, logout}}>
+    <AuthContext.Provider value={{accessToken, setAccessToken, refreshAccessToken, logout, authenticated, loading}}>
         {!loading && children}
     </AuthContext.Provider>
   )
