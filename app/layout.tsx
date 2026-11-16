@@ -4,7 +4,8 @@ import ThemeRegistry from "./theme/ThemeRegistry";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import Header from "./components/Header";
 import { AuthProvider } from "./context/AuthContext";
-import 'react-image-crop/dist/ReactCrop.css'
+import "react-image-crop/dist/ReactCrop.css";
+import StoreProvider from "@/store/storeProvider";
 
 export const metadata: Metadata = {
   title: "ShaadiBio",
@@ -19,14 +20,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          <AppRouterCacheProvider>
-            <ThemeRegistry>
-              <Header />
-              {children}
-            </ThemeRegistry>
-          </AppRouterCacheProvider>
-        </AuthProvider>
+        <StoreProvider>
+          <AuthProvider>
+            <AppRouterCacheProvider>
+              <ThemeRegistry>
+                <Header />
+                {children}
+              </ThemeRegistry>
+            </AppRouterCacheProvider>
+          </AuthProvider>
+        </StoreProvider>
       </body>
     </html>
   );

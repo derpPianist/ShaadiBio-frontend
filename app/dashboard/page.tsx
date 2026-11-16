@@ -5,38 +5,38 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import CardActionArea from "@mui/material/CardActionArea";
-import CardHeader from "@mui/material/CardHeader";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import type { Profile } from "@/features/biodata/types";
+import Link from "next/link";
+import { useAppDispatch } from "@/store/hooks";
+import { selectProfile } from "@/store/profilesSlice";
 
 const Dashboard = () => {
-  interface Profile {
-    id: string;
-    userid: string;
-    name: string;
-    gender: string;
-    DOB: string;
-    occupation: string;
-    income?: string;
-    education: string;
-    fathers_name?: string;
-    fathers_occupation?: string;
-    mothers_name?: string;
-    mothers_occupation?: string;
-    no_of_siblings?: number;
-    contact_number: string;
-    contact_email: string;
-    image_url: string;
-  }
-
-  const [loading, setLoading] = useState(false); // todo: change to false after completion
+  const [loading, setLoading] = useState(true);
   const [profilesInfo, setProfilesInfo] = useState<Profile[]>([]);
-  const { accessToken, authenticated } = useAuth();
+  const { accessToken, authenticated, checkTokenAndFetch } = useAuth();
   const router = useRouter();
+  const [snack, setSnack] = useState({ open: false, message: "" });
+  const [loadFailed, setLoadFailed] = useState(false);
+
+  const showError = (message: string) => {
+    setLoadFailed(true);
+    setSnack({ open: true, message });
+  };
+
+  const closeSnack = (_: unknown, reason?: string) => {
+    if (reason === "clickaway") return; // stray clicks shouldn't dismiss it
+    setSnack((s) => ({ ...s, open: false }));
+  };
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!authenticated) {
@@ -45,40 +45,61 @@ const Dashboard = () => {
   }, [authenticated]);
 
   useEffect(() => {
+    if (!accessToken) return;
+
     const fetchProfilesInfo = async () => {
       setLoading(true);
-      const res = await fetch(
-        "http://localhost:5000/api/v1/profile/get-profile",
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
+      setLoadFailed(false);
+      try {
+        // const res = await fetch(
+        //   "http://localhost:5000/api/v1/profile/get-profile",
+        //   {
+        //     method: "GET",
+        //     credentials: "include",
+        //     headers: { authorization: `Bearer ${accessToken}` },
+        //   },
+        // );
 
-      const data = await res.json();
+        // if (!res.ok) {
+        //   showError(
+        //     res.status === 401
+        //       ? "Your session has expired. Please log in again."
+        //       : "Couldn't load your profiles. Please try again.",
+        //   );
+        //   return;
+        // }
 
-      console.log("profiles_data: ", data);
+        const res = await checkTokenAndFetch(
+          "http://localhost:5000/api/v1/profile/get-profile",
+          "GET",
+        );
 
-      setProfilesInfo(data.profiles);
-      setLoading(false);
+        console.log("API response: ", res);
+
+        if (res) {
+          const data = await res.json();
+
+          console.log("Data after formatting: ", data);
+
+          setProfilesInfo(Array.isArray(data.profiles) ? data.profiles : []);
+        }
+      } catch {
+        showError(
+          "Couldn't reach the server. Check your connection and try again.",
+        );
+      } finally {
+        setLoading(false); // runs on success, failure and exceptions alike
+      }
     };
 
     fetchProfilesInfo();
-  }, []);
-
-  //Todo: Remove after completion
-  useEffect(() => {
-    console.log("Changed profiles data: ", profilesInfo);
-  }, [profilesInfo]);
+  }, [accessToken]);
 
   return (
     <>
       {authenticated && !loading ? (
         <>
-          {profilesInfo ? (
+          {profilesInfo.length > 0 ? (
             <div className="w-full min-h-screen py-20 px-4">
               <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5 max-w-7xl mx-auto">
                 {profilesInfo.map((profile: Profile) => (
@@ -99,6 +120,9 @@ const Dashboard = () => {
                         alignItems: "stretch",
                         height: "100%",
                       }}
+                      component={Link}
+                      href={`/biodata/${profile.id}`}
+                      onClick={() => dispatch(selectProfile(profile))}
                     >
                       <CardMedia
                         component="img"
@@ -117,7 +141,12 @@ const Dashboard = () => {
                     </CardActionArea>
                   </Card>
                 ))}
-                <Card sx={{ bgcolor: "background.paper", borderRadius: 3 }} onClick={()=>{router.replace('/create-profile')}}>
+                <Card
+                  sx={{ bgcolor: "background.paper", borderRadius: 3 }}
+                  onClick={() => {
+                    router.push("/create-profile");
+                  }}
+                >
                   <CardActionArea
                     sx={{
                       minHeight: 300,
@@ -154,6 +183,12 @@ const Dashboard = () => {
                   </CardActionArea>
                 </Card>
               </div>
+            </div>
+          ) : loadFailed ? (
+            <div className="min-h-screen w-full flex justify-center items-center">
+              <Typography color="text.secondary">
+                We couldn't load your profiles.
+              </Typography>
             </div>
           ) : (
             <div className="min-h-screen w-full flex justify-center items-center p-2.5">
@@ -203,8 +238,26 @@ const Dashboard = () => {
           )}
         </>
       ) : (
-        <CircularProgress aria-label="Loading…" />
+        <div className="min-h-screen w-full flex justify-center items-center">
+          <CircularProgress aria-label="Loading…" />
+        </div>
       )}
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={6000}
+        onClose={closeSnack}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={closeSnack}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

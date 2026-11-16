@@ -58,6 +58,7 @@ const CreateProfile = () => {
     contact_number: "", //
     contact_email: "", //
     residential_address: "",
+    //height: '', 
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 

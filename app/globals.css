@@ -5,3 +5,37 @@ html, body {
   padding: 0;
   box-sizing: border-box;
 }
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* hide everything, then show only the sheet */
+  body * {
+    visibility: hidden;
+  }
+  #print-area,
+  #print-area * {
+    visibility: visible;
+  }
+  #print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
